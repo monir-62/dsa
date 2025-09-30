@@ -14,3 +14,45 @@ int main(){
     }
     return 0;
 }
+
+1.$$BRUT FORCE METHOD
+
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[] = {2, -3, 6, -5, 4, 2};
+    int n = 6;
+    
+    for (int i = 0; i < n; i++) {
+        int sum = 0;//sum resets to zero
+        for (int j = i; j < n; j++) {
+            sum += arr[j];   // accumulate//need to be careful
+            cout << sum << ","; 
+        }
+        cout << endl;
+    }
+    return 0;
+}
+
+2.#include <iostream>
+using namespace std;
+
+int main() {
+    int maxs=INT32_MIN;//note
+    int arr[] = {2, -3, 6, -5, 4, 2};
+    int n = 6;
+    
+    for (int i = 0; i < n; i++) {
+        int sum = 0;
+        for (int j = i; j < n; j++) {
+            sum += arr[j];   // accumulate
+            cout << sum << ","; 
+            maxs=max(sum,maxs);//note
+        }
+        cout << endl;
+    }
+    cout<<maxs<<endl;
+    return 0;
+}
+
