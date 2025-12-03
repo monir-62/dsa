@@ -83,7 +83,6 @@ public:
         Node* newNode = new Node(value);
         Node* temp = head;
         
-        // Traverse to the node before the desired position
         for (int i = 1; i < position - 1; i++) {
             temp = temp->next;
         }
@@ -115,7 +114,7 @@ public:
             return;
         }
         
-        if (head->next == nullptr) { // Only one node
+        if (head->next == nullptr) {
             cout << head->data << " deleted from end.\n";
             delete head;
             head = nullptr;
@@ -135,7 +134,7 @@ public:
         size--;
     }
     
-    // 8. Delete from specific position (1-based indexing)
+    // 8. Delete from specific position
     void deleteFromPosition(int position) {
         if (isEmpty()) {
             cout << "List is empty! Cannot delete.\n";
@@ -155,7 +154,6 @@ public:
         Node* temp = head;
         Node* prev = nullptr;
         
-        // Traverse to the node at the desired position
         for (int i = 1; i < position; i++) {
             prev = temp;
             temp = temp->next;
@@ -185,7 +183,7 @@ public:
         return false;
     }
     
-    // 10. Update value at position
+    // 10. Update value at a position
     void updateAtPosition(int value, int position) {
         if (isEmpty()) {
             cout << "List is empty! Cannot update.\n";
@@ -218,9 +216,7 @@ public:
         cout << "Linked List: ";
         while (temp != nullptr) {
             cout << temp->data;
-            if (temp->next != nullptr) {
-                cout << " -> ";
-            }
+            if (temp->next != nullptr) cout << " -> ";
             temp = temp->next;
         }
         cout << " -> NULL\n";
@@ -229,22 +225,20 @@ public:
     
     // 12. Reverse the linked list
     void reverse() {
-        if (isEmpty() || head->next == nullptr) {
-            return; // Empty or single element list
-        }
+        if (isEmpty() || head->next == nullptr) return;
         
         Node* prev = nullptr;
         Node* current = head;
         Node* next = nullptr;
         
         while (current != nullptr) {
-            next = current->next;  // Store next node
-            current->next = prev;  // Reverse current node's pointer
-            prev = current;        // Move prev to current
-            current = next;        // Move to next node
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
         }
         
-        head = prev;  // Update head to new first node
+        head = prev;
         cout << "List reversed successfully.\n";
     }
     
@@ -268,15 +262,19 @@ public:
         return temp->data;
     }
     
-    // 14. Clear the entire list
+    // 14. Clear the entire list (FIXED)
     void clear() {
-        while (!isEmpty()) {
-            deleteFromBeginning();
+        Node* temp;
+        while (head != nullptr) {
+            temp = head;
+            head = head->next;
+            delete temp;
         }
+        size = 0;
         cout << "List cleared.\n";
     }
     
-    // 15. Find middle element (without using size)
+    // 15. Find middle element (returns -1 if empty)
     int findMiddle() {
         if (isEmpty()) {
             cout << "List is empty!\n";
@@ -286,7 +284,6 @@ public:
         Node* slow = head;
         Node* fast = head;
         
-        // Fast pointer moves twice as fast as slow pointer
         while (fast != nullptr && fast->next != nullptr) {
             slow = slow->next;
             fast = fast->next->next;
@@ -295,11 +292,9 @@ public:
         return slow->data;
     }
     
-    // 16. Detect if list has a cycle (Floyd's Cycle Detection)
+    // 16. Detect cycle (Floyd's algorithm)
     bool hasCycle() {
-        if (isEmpty()) {
-            return false;
-        }
+        if (isEmpty()) return false;
         
         Node* slow = head;
         Node* fast = head;
@@ -307,16 +302,13 @@ public:
         while (fast != nullptr && fast->next != nullptr) {
             slow = slow->next;
             fast = fast->next->next;
-            
-            if (slow == fast) {
-                return true;
-            }
+            if (slow == fast) return true;
         }
         
         return false;
     }
     
-    // Helper method to create a cycle for testing (connect last node to given position)
+    // Create a cycle for testing
     void createCycle(int position) {
         if (isEmpty() || position < 1 || position > size) {
             cout << "Cannot create cycle.\n";
@@ -325,9 +317,8 @@ public:
         
         Node* temp = head;
         Node* cycleNode = nullptr;
-        
-        // Find last node and the node at given position
         Node* lastNode = head;
+        
         while (lastNode->next != nullptr) {
             lastNode = lastNode->next;
         }
@@ -341,41 +332,33 @@ public:
         cout << "Cycle created from last node to position " << position << ".\n";
     }
     
-    // Helper method to remove cycle
+    // Remove cycle (FIXED)
     void removeCycle() {
         if (!hasCycle()) {
             cout << "No cycle detected.\n";
             return;
         }
-        
-        // Floyd's cycle detection and removal
+
         Node* slow = head;
         Node* fast = head;
-        
-        // Detect cycle
-        while (fast != nullptr && fast->next != nullptr) {
+
+        do {
             slow = slow->next;
             fast = fast->next->next;
-            
-            if (slow == fast) {
-                break;
+        } while (slow != fast);
+
+        slow = head;
+        if (slow == fast) {
+            while (fast->next != slow)
+                fast = fast->next;
+        } else {
+            while (slow->next != fast->next) {
+                slow = slow->next;
+                fast = fast->next;
             }
         }
-        
-        // Find start of cycle
-        slow = head;
-        Node* prev = nullptr;
-        while (slow != fast) {
-            prev = fast;
-            slow = slow->next;
-            fast = fast->next;
-        }
-        
-        // Remove cycle
-        if (prev != nullptr) {
-            prev->next = nullptr;
-        }
-        
+
+        fast->next = nullptr;
         cout << "Cycle removed.\n";
     }
 };
@@ -470,16 +453,16 @@ int main() {
                 cout << "Size of list: " << list.getSize() << "\n";
                 break;
                 
-            case 12:
-                cout << "Middle element: " << list.findMiddle() << "\n";
+            case 12: {
+                int mid = list.findMiddle();
+                if (mid != -1)
+                    cout << "Middle element: " << mid << "\n";
                 break;
+            }
                 
             case 13:
-                if (list.hasCycle()) {
-                    cout << "Cycle detected in the list.\n";
-                } else {
-                    cout << "No cycle detected.\n";
-                }
+                if (list.hasCycle()) cout << "Cycle detected in the list.\n";
+                else cout << "No cycle detected.\n";
                 break;
                 
             case 14:
