@@ -1,0 +1,510 @@
+#include <iostream>
+using namespace std;
+
+// Node class for linked list elements
+class Node {
+public:
+    int data;
+    Node* next;
+    
+    // Constructor
+    Node(int value) {
+        data = value;
+        next = nullptr;
+    }
+};
+
+// Linked List class
+class LinkedList {
+private:
+    Node* head;
+    int size;
+    
+public:
+    // Constructor
+    LinkedList() {
+        head = nullptr;
+        size = 0;
+    }
+    
+    // Destructor to free memory
+    ~LinkedList() {
+        clear();
+    }
+    
+    // 1. Check if list is empty
+    bool isEmpty() {
+        return head == nullptr;
+    }
+    
+    // 2. Get the size of the list
+    int getSize() {
+        return size;
+    }
+    
+    // 3. Insert at beginning
+    void insertAtBeginning(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = head;
+        head = newNode;
+        size++;
+        cout << value << " inserted at beginning.\n";
+    }
+    
+    // 4. Insert at end
+    void insertAtEnd(int value) {
+        Node* newNode = new Node(value);
+        
+        if (isEmpty()) {
+            head = newNode;
+        } else {
+            Node* temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+        size++;
+        cout << value << " inserted at end.\n";
+    }
+    
+    // 5. Insert at specific position (1-based indexing)
+    void insertAtPosition(int value, int position) {
+        if (position < 1 || position > size + 1) {
+            cout << "Invalid position! Position should be between 1 and " << size + 1 << ".\n";
+            return;
+        }
+        
+        if (position == 1) {
+            insertAtBeginning(value);
+            return;
+        }
+        
+        Node* newNode = new Node(value);
+        Node* temp = head;
+        
+        // Traverse to the node before the desired position
+        for (int i = 1; i < position - 1; i++) {
+            temp = temp->next;
+        }
+        
+        newNode->next = temp->next;
+        temp->next = newNode;
+        size++;
+        cout << value << " inserted at position " << position << ".\n";
+    }
+    
+    // 6. Delete from beginning
+    void deleteFromBeginning() {
+        if (isEmpty()) {
+            cout << "List is empty! Cannot delete.\n";
+            return;
+        }
+        
+        Node* temp = head;
+        head = head->next;
+        cout << temp->data << " deleted from beginning.\n";
+        delete temp;
+        size--;
+    }
+    
+    // 7. Delete from end
+    void deleteFromEnd() {
+        if (isEmpty()) {
+            cout << "List is empty! Cannot delete.\n";
+            return;
+        }
+        
+        if (head->next == nullptr) { // Only one node
+            cout << head->data << " deleted from end.\n";
+            delete head;
+            head = nullptr;
+        } else {
+            Node* temp = head;
+            Node* prev = nullptr;
+            
+            while (temp->next != nullptr) {
+                prev = temp;
+                temp = temp->next;
+            }
+            
+            prev->next = nullptr;
+            cout << temp->data << " deleted from end.\n";
+            delete temp;
+        }
+        size--;
+    }
+    
+    // 8. Delete from specific position (1-based indexing)
+    void deleteFromPosition(int position) {
+        if (isEmpty()) {
+            cout << "List is empty! Cannot delete.\n";
+            return;
+        }
+        
+        if (position < 1 || position > size) {
+            cout << "Invalid position! Position should be between 1 and " << size << ".\n";
+            return;
+        }
+        
+        if (position == 1) {
+            deleteFromBeginning();
+            return;
+        }
+        
+        Node* temp = head;
+        Node* prev = nullptr;
+        
+        // Traverse to the node at the desired position
+        for (int i = 1; i < position; i++) {
+            prev = temp;
+            temp = temp->next;
+        }
+        
+        prev->next = temp->next;
+        cout << temp->data << " deleted from position " << position << ".\n";
+        delete temp;
+        size--;
+    }
+    
+    // 9. Search for a value
+    bool search(int value) {
+        Node* temp = head;
+        int position = 1;
+        
+        while (temp != nullptr) {
+            if (temp->data == value) {
+                cout << value << " found at position " << position << ".\n";
+                return true;
+            }
+            temp = temp->next;
+            position++;
+        }
+        
+        cout << value << " not found in the list.\n";
+        return false;
+    }
+    
+    // 10. Update value at position
+    void updateAtPosition(int value, int position) {
+        if (isEmpty()) {
+            cout << "List is empty! Cannot update.\n";
+            return;
+        }
+        
+        if (position < 1 || position > size) {
+            cout << "Invalid position! Position should be between 1 and " << size << ".\n";
+            return;
+        }
+        
+        Node* temp = head;
+        for (int i = 1; i < position; i++) {
+            temp = temp->next;
+        }
+        
+        int oldValue = temp->data;
+        temp->data = value;
+        cout << "Updated position " << position << ": " << oldValue << " -> " << value << ".\n";
+    }
+    
+    // 11. Display the linked list
+    void display() {
+        if (isEmpty()) {
+            cout << "List is empty.\n";
+            return;
+        }
+        
+        Node* temp = head;
+        cout << "Linked List: ";
+        while (temp != nullptr) {
+            cout << temp->data;
+            if (temp->next != nullptr) {
+                cout << " -> ";
+            }
+            temp = temp->next;
+        }
+        cout << " -> NULL\n";
+        cout << "Size: " << size << "\n";
+    }
+    
+    // 12. Reverse the linked list
+    void reverse() {
+        if (isEmpty() || head->next == nullptr) {
+            return; // Empty or single element list
+        }
+        
+        Node* prev = nullptr;
+        Node* current = head;
+        Node* next = nullptr;
+        
+        while (current != nullptr) {
+            next = current->next;  // Store next node
+            current->next = prev;  // Reverse current node's pointer
+            prev = current;        // Move prev to current
+            current = next;        // Move to next node
+        }
+        
+        head = prev;  // Update head to new first node
+        cout << "List reversed successfully.\n";
+    }
+    
+    // 13. Get value at specific position
+    int getValueAtPosition(int position) {
+        if (isEmpty()) {
+            cout << "List is empty!\n";
+            return -1;
+        }
+        
+        if (position < 1 || position > size) {
+            cout << "Invalid position!\n";
+            return -1;
+        }
+        
+        Node* temp = head;
+        for (int i = 1; i < position; i++) {
+            temp = temp->next;
+        }
+        
+        return temp->data;
+    }
+    
+    // 14. Clear the entire list
+    void clear() {
+        while (!isEmpty()) {
+            deleteFromBeginning();
+        }
+        cout << "List cleared.\n";
+    }
+    
+    // 15. Find middle element (without using size)
+    int findMiddle() {
+        if (isEmpty()) {
+            cout << "List is empty!\n";
+            return -1;
+        }
+        
+        Node* slow = head;
+        Node* fast = head;
+        
+        // Fast pointer moves twice as fast as slow pointer
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        
+        return slow->data;
+    }
+    
+    // 16. Detect if list has a cycle (Floyd's Cycle Detection)
+    bool hasCycle() {
+        if (isEmpty()) {
+            return false;
+        }
+        
+        Node* slow = head;
+        Node* fast = head;
+        
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+            
+            if (slow == fast) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    // Helper method to create a cycle for testing (connect last node to given position)
+    void createCycle(int position) {
+        if (isEmpty() || position < 1 || position > size) {
+            cout << "Cannot create cycle.\n";
+            return;
+        }
+        
+        Node* temp = head;
+        Node* cycleNode = nullptr;
+        
+        // Find last node and the node at given position
+        Node* lastNode = head;
+        while (lastNode->next != nullptr) {
+            lastNode = lastNode->next;
+        }
+        
+        for (int i = 1; i < position; i++) {
+            temp = temp->next;
+        }
+        cycleNode = temp;
+        
+        lastNode->next = cycleNode;
+        cout << "Cycle created from last node to position " << position << ".\n";
+    }
+    
+    // Helper method to remove cycle
+    void removeCycle() {
+        if (!hasCycle()) {
+            cout << "No cycle detected.\n";
+            return;
+        }
+        
+        // Floyd's cycle detection and removal
+        Node* slow = head;
+        Node* fast = head;
+        
+        // Detect cycle
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+            
+            if (slow == fast) {
+                break;
+            }
+        }
+        
+        // Find start of cycle
+        slow = head;
+        Node* prev = nullptr;
+        while (slow != fast) {
+            prev = fast;
+            slow = slow->next;
+            fast = fast->next;
+        }
+        
+        // Remove cycle
+        if (prev != nullptr) {
+            prev->next = nullptr;
+        }
+        
+        cout << "Cycle removed.\n";
+    }
+};
+
+// Main function to demonstrate the linked list
+int main() {
+    LinkedList list;
+    int choice, value, position;
+    
+    cout << "========== LINKED LIST IMPLEMENTATION ==========\n";
+    
+    do {
+        cout << "\n========== MENU ==========\n";
+        cout << "1. Insert at beginning\n";
+        cout << "2. Insert at end\n";
+        cout << "3. Insert at position\n";
+        cout << "4. Delete from beginning\n";
+        cout << "5. Delete from end\n";
+        cout << "6. Delete from position\n";
+        cout << "7. Search element\n";
+        cout << "8. Update at position\n";
+        cout << "9. Display list\n";
+        cout << "10. Reverse list\n";
+        cout << "11. Get size\n";
+        cout << "12. Find middle element\n";
+        cout << "13. Check for cycle\n";
+        cout << "14. Create cycle (for testing)\n";
+        cout << "15. Remove cycle\n";
+        cout << "16. Clear list\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
+        switch(choice) {
+            case 1:
+                cout << "Enter value to insert at beginning: ";
+                cin >> value;
+                list.insertAtBeginning(value);
+                break;
+                
+            case 2:
+                cout << "Enter value to insert at end: ";
+                cin >> value;
+                list.insertAtEnd(value);
+                break;
+                
+            case 3:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                cout << "Enter position (1 to " << list.getSize() + 1 << "): ";
+                cin >> position;
+                list.insertAtPosition(value, position);
+                break;
+                
+            case 4:
+                list.deleteFromBeginning();
+                break;
+                
+            case 5:
+                list.deleteFromEnd();
+                break;
+                
+            case 6:
+                cout << "Enter position to delete (1 to " << list.getSize() << "): ";
+                cin >> position;
+                list.deleteFromPosition(position);
+                break;
+                
+            case 7:
+                cout << "Enter value to search: ";
+                cin >> value;
+                list.search(value);
+                break;
+                
+            case 8:
+                cout << "Enter new value: ";
+                cin >> value;
+                cout << "Enter position to update (1 to " << list.getSize() << "): ";
+                cin >> position;
+                list.updateAtPosition(value, position);
+                break;
+                
+            case 9:
+                list.display();
+                break;
+                
+            case 10:
+                list.reverse();
+                break;
+                
+            case 11:
+                cout << "Size of list: " << list.getSize() << "\n";
+                break;
+                
+            case 12:
+                cout << "Middle element: " << list.findMiddle() << "\n";
+                break;
+                
+            case 13:
+                if (list.hasCycle()) {
+                    cout << "Cycle detected in the list.\n";
+                } else {
+                    cout << "No cycle detected.\n";
+                }
+                break;
+                
+            case 14:
+                cout << "Enter position to create cycle (1 to " << list.getSize() << "): ";
+                cin >> position;
+                list.createCycle(position);
+                break;
+                
+            case 15:
+                list.removeCycle();
+                break;
+                
+            case 16:
+                list.clear();
+                break;
+                
+            case 0:
+                cout << "Exiting program...\n";
+                break;
+                
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+        
+    } while (choice != 0);
+    
+    return 0;
+}
